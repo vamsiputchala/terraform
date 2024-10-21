@@ -60,16 +60,7 @@ resource "aws_db_instance" "default" {
   skip_final_snapshot   = true
 }
 
-resource "aws_instance" "app" {
-  ami                    = var.ami_id
-  instance_type         = var.instance_type
-  subnet_id             = aws_subnet.subnet_a.id # Choose one of the subnets
-  vpc_security_group_ids = [aws_security_group.allow_http.id]
 
-  tags = {
-    Name = "${var.environment}-opensupports-app"
-  }
-}
 resource "aws_s3_bucket" "static_files" {
   bucket = "${var.environment}-opensupports-static"
   #acl    = "private" # or "public-read" if necessary
@@ -144,7 +135,7 @@ resource "aws_iam_instance_profile" "ec2_cloudwatch_instance_profile" {
   name = "${var.environment}-cloudwatch-instance-profile"
   role = aws_iam_role.ec2_cloudwatch_role.name
 }
-resource "aws_instance" "app1" {
+resource "aws_instance" "app" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   subnet_id              = aws_subnet.subnet_a.id
@@ -152,7 +143,7 @@ resource "aws_instance" "app1" {
 
   iam_instance_profile   = aws_iam_instance_profile.ec2_cloudwatch_instance_profile.name
 
-  monitoring = true  # Enable detailed monitoring for 1-minute intervals
+  monitoring = true  # Enable detailed monitoring
 
   tags = {
     Name = "${var.environment}-opensupports-app"
@@ -201,4 +192,3 @@ resource "aws_sns_topic_subscription" "email_subscription" {
   protocol  = "email"
   endpoint  = "vamsi.putchala1011@gmail.com"  # Replace with your email
 }
-
